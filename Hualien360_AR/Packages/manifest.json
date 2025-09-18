@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "jillejr.newtonsoft.json-for-unity": "13.0.102",
+    "jillejr.newtonsoft.json-for-unity.converters": "1.6.3",
     "com.unity.ai.navigation": "2.0.4",
     "com.unity.collab-proxy": "2.9.3",
     "com.unity.ide.rider": "3.0.31",
@@ -43,5 +45,15 @@
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
     "com.unity.modules.xr": "1.0.0"
-  }
+  },
+  "scopedRegistries": [
+    {
+      "name": "jilleJr",
+      "url": "https://npm.cloudsmith.io/jillejr/newtonsoft-json-for-unity",
+      "scopes": [
+        "jillejr.newtonsoft.json-for-unity"
+      ],
+      "overrideBuiltIns": false
+    }
+  ]
 }

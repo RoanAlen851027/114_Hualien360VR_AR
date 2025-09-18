@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+   <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>{{{ PRODUCT_NAME }}}</title>
+  <link rel="shortcut icon" href="TemplateData/favicon.ico">
+  <link rel="stylesheet" href="TemplateData/style.css">
+  <link rel="manifest" href="manifest.webmanifest.json">
+  <link rel="stylesheet" type="text/css" href="TemplateData/loading-bar.css" />
+  <script type="text/javascript" src="TemplateData/loading-bar.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.1.4/dist/mindar-image.prod.js"></script>
+  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.1.4/dist/mindar-image-aframe.prod.js"></script>
+  <script src="TemplateData/ar.js"></script>
+</head>
+
+<body>
+  <a-scene
+    mindar-image="imageTargetSrc: data/markers/targets.mind; maxTrack: 1; autoStart: false; uiError:no; uiScanning:no; filterMinCF:0.00075; filterBeta: 0.0001;"
+    vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+    <div id="unity-container" class="unity-desktop">
+      <canvas id="unity-canvas" tabindex="-1" Style="width:100%;height:100%;"></canvas>
+      <div id="unity-loading-bar">
+        <div class="ldBar" label-center data-type="fill" data-fill-background-extrude="5" data-fill-dir="btt"
+          data-img="TemplateData/unity-logo-light.png" data-text="%">
+        </div>
+      </div>
+      <div id="unity-warning"> </div>
+    </div>
+   
+    <div id="orientationData" style="display:none"></div>
+
+    <a-camera position="0 0 0" look-controls="enabled: false" cameratransform></a-camera>
+    <a-entity mindar-image-target="targetIndex: 0" markercontroller="imageIndex: 0"></a-entity>
+    <a-entity mindar-image-target="targetIndex: 1" markercontroller="imageIndex: 1"></a-entity>
+    <a-entity mindar-image-target="targetIndex: 2" markercontroller="imageIndex: 2"></a-entity>
+    <a-entity mindar-image-target="targetIndex: 3" markercontroller="imageIndex: 3"></a-entity>
+    <a-entity mindar-image-target="targetIndex: 4" markercontroller="imageIndex: 4"></a-entity>
+    <a-entity mindar-image-target="targetIndex: 5" markercontroller="imageIndex: 5"></a-entity> 
+    <a-entity mindar-image-target="targetIndex: 6" markercontroller="imageIndex: 6"></a-entity> 
+    <a-entity mindar-image-target="targetIndex: 7" markercontroller="imageIndex: 7"></a-entity> 
+    <a-entity mindar-image-target="targetIndex: 8" markercontroller="imageIndex: 8"></a-entity> 
+    <a-entity mindar-image-target="targetIndex: 9" markercontroller="imageIndex: 9"></a-entity> 
+    <a-entity mindar-image-target="targetIndex: 10" markercontroller="imageIndex: 10"></a-entity> 
+    <a-entity mindar-image-target="targetIndex: 11" markercontroller="imageIndex: 11"></a-entity> 
+                 
+  </a-scene>
+
+  <script>
+    const qrCodes = {
+      "qr1": "QRCode_Apple",
+      "qr2": "QRCode_Banana",
+      "qr3": "QRCode_Cherry",
+      "qr4": "QRCode_Dragonfruit",
+      "qr5": "QRCode_Eggplant",
+      "qr6": "QRCode_Fig",
+      "qr7": "QRCode_Grape",
+      "qr8": "QRCode_Honeydew"
+    };
+
+    for (const id in qrCodes) {
+      const el = document.getElementById(id);
+      el.addEventListener("targetFound", () => {
+        console.log("偵測到 QR：", qrCodes[id]);
+        if (typeof unityInstance !== 'undefined') {
+          unityInstance.SendMessage("GMS", "ReceiveFromJS", qrCodes[id]);
+        }
+      });
+      el.addEventListener("targetLost", () => {
+        console.log("QR 離開畫面：", qrCodes[id]);
+      });
+    }
+  </script>
+
+  <script>
+    window.addEventListener("load", function () {
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("ServiceWorker.js");
+      }
+    });
+
+    var container = document.querySelector("#unity-container");
+    var canvas = document.querySelector("#unity-canvas");
+    var loadingBar = document.querySelector("#unity-loading-bar");
+    var ldBarElement = document.querySelector('.ldBar');
+    var warningBanner = document.querySelector("#unity-warning");
+
+    function unityShowBanner(msg, type) {
+      function updateBannerVisibility() {
+        warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
+      }
+      var div = document.createElement('div');
+      div.innerHTML = msg;
+      warningBanner.appendChild(div);
+      if (type == 'error') div.style = 'background: red; padding: 10px;';
+      else {
+        if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
+        setTimeout(function () {
+          warningBanner.removeChild(div);
+          updateBannerVisibility();
+        }, 5000);
+      }
+      updateBannerVisibility();
+    }
+
+    var buildUrl = "Build";
+    var loaderUrl = buildUrl + "/{{{ LOADER_FILENAME }}}";
+    var config = {
+      dataUrl: buildUrl + "/{{{ DATA_FILENAME }}}",
+      frameworkUrl: buildUrl + "/{{{ FRAMEWORK_FILENAME }}}",
+      #if USE_THREADS
+      workerUrl: buildUrl + "/{{{ WORKER_FILENAME }}}",
+      #endif
+#if USE_WASM
+      codeUrl: buildUrl + "/{{{ CODE_FILENAME }}}",
+      #endif
+#if MEMORY_FILENAME
+      memoryUrl: buildUrl + "/{{{ MEMORY_FILENAME }}}",
+      #endif
+#if SYMBOLS_FILENAME
+      symbolsUrl: buildUrl + "/{{{ SYMBOLS_FILENAME }}}",
+      #endif
+      streamingAssetsUrl: "StreamingAssets",
+      companyName: "/{{{ COMPANY_NAME }}}",
+      productName: "/{{{ PRODUCT_NAME }}}",
+      productVersion: "/{{{ PRODUCT_VERSION }}}",
+      showBanner: unityShowBanner,
+      webglContextAttributes: {
+        preserveDrawingBuffer: true,
+        alpha: true
+      },
+    };
+
+    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+      var meta = document.createElement('meta');
+      meta.name = 'viewport';
+      meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+      document.getElementsByTagName('head')[0].appendChild(meta);
+    }
+
+    #if BACKGROUND_FILENAME
+    canvas.style.background = "url('" + buildUrl + "/{{{ BACKGROUND_FILENAME.replace(/'/g, '%27') }}}') center / cover";
+    #endif
+    loadingBar.style.display = "block";
+
+    var script = document.createElement("script");
+    var gameInstance;
+    ldBarElement.setAttribute('data-min', 0);
+    const ldBarInstance = new ldBar(ldBarElement);
+    script.src = loaderUrl;
+    script.onload = () => {
+      createUnityInstance(canvas, config, (progress) => {
+        ldBarInstance.set(100 * progress + 9);
+      }).then((unityInstance) => {
+        gameInstance = unityInstance;
+		loadingBar.style.display = "none";
+      }).catch((message) => {
+        console.log(message);
+      });
+    };
+    document.body.appendChild(script);
+  </script>
+
+</body>
+
+</html>
