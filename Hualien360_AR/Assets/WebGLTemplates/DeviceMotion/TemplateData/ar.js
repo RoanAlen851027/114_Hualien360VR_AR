@@ -23,6 +23,21 @@ window.addEventListener('load', (event) => {
 	aCanvas.style.zIndex = "-1";
 });
 
+document.addEventListener("visibilitychange", () => {
+    if(document.hidden){
+        console.log("Page hidden, pausing camera...");
+        if(arSystem && arSystem.video){
+            arSystem.video.pause();   // 停止播放，但不要重新 start
+        }
+    } else {
+        console.log("Page visible, resuming camera...");
+        if(arSystem && arSystem.video){
+            arSystem.video.play();    // 繼續播放
+            // 不要再呼叫 arSystem.start()
+        }
+    }
+});
+
 
 function cameraReady(){
     isCameraReady = true;

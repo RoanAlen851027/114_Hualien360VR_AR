@@ -13,7 +13,9 @@
   <script src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.1.4/dist/mindar-image.prod.js"></script>
   <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.1.4/dist/mindar-image-aframe.prod.js"></script>
-  <script src="TemplateData/ar.js"></script>
+  <script src="TemplateData/ar.js"></script>  
+  <script src="PluginData/arCamera.js"></script>
+ 
 </head>
 
 <body>
@@ -32,7 +34,7 @@
    
     <div id="orientationData" style="display:none"></div>
 
-    <a-camera position="0 0 0" look-controls="enabled: false" cameratransform></a-camera>
+    <a-camera position="0 0 0" cameratransform></a-camera>
     <a-entity mindar-image-target="targetIndex: 0" markercontroller="imageIndex: 0"></a-entity>
     <a-entity mindar-image-target="targetIndex: 1" markercontroller="imageIndex: 1"></a-entity>
     <a-entity mindar-image-target="targetIndex: 2" markercontroller="imageIndex: 2"></a-entity>
@@ -48,31 +50,7 @@
                  
   </a-scene>
 
-  <script>
-    const qrCodes = {
-      "qr1": "QRCode_Apple",
-      "qr2": "QRCode_Banana",
-      "qr3": "QRCode_Cherry",
-      "qr4": "QRCode_Dragonfruit",
-      "qr5": "QRCode_Eggplant",
-      "qr6": "QRCode_Fig",
-      "qr7": "QRCode_Grape",
-      "qr8": "QRCode_Honeydew"
-    };
 
-    for (const id in qrCodes) {
-      const el = document.getElementById(id);
-      el.addEventListener("targetFound", () => {
-        console.log("偵測到 QR：", qrCodes[id]);
-        if (typeof unityInstance !== 'undefined') {
-          unityInstance.SendMessage("GMS", "ReceiveFromJS", qrCodes[id]);
-        }
-      });
-      el.addEventListener("targetLost", () => {
-        console.log("QR 離開畫面：", qrCodes[id]);
-      });
-    }
-  </script>
 
   <script>
     window.addEventListener("load", function () {
